@@ -49,10 +49,12 @@ public static class MauiProgram
 
 		// Register Pages
 		builder.Services.AddTransient<LandmarksPage>();
+		builder.Services.AddTransient<LandmarkDetailPage>();
 		builder.Services.AddTransient<TripPlanningPage>();
 
 		// Register ViewModels
 		builder.Services.AddTransient<LandmarksViewModel>();
+		builder.Services.AddTransient<LandmarkDetailViewModel>();
 		builder.Services.AddTransient<TripPlanningViewModel>();
 		builder.Services.AddSingleton<ChatViewModel>();
 
@@ -143,6 +145,9 @@ public static class MauiProgram
 				.Build();
 		});
 
+		// Semantic search backed by NL embeddings + in-memory vector store
+		builder.Services.AddSingleton<ISemanticSearchService, EmbeddingSearchService>();
+
 		return builder;
 	}
 #pragma warning restore CA1416
@@ -174,9 +179,6 @@ public static class MauiProgram
 			return phiClient
 				.AsBuilder()
 				.UseLogging(loggerFactory)
-				// This prevents double tool invocation when using Microsoft Agent Framework
-				// TODO: workaround for https://github.com/dotnet/extensions/issues/7204
-				.Use(cc => new NonFunctionInvokingChatClient(cc, loggerFactory, sp))
 				.Build();
 		});
 
@@ -193,18 +195,8 @@ public static class MauiProgram
 				.Build();
 		});
 
-		// Register the Phi Silica Embedding generator
-		builder.Services.AddSingleton<PhiSilicaEmbeddingGenerator>();
-
-		// Register embedding generator
-		builder.Services.AddSingleton<IEmbeddingGenerator<string, Embedding<float>>>(sp =>
-		{
-			var embeddings = sp.GetRequiredService<PhiSilicaEmbeddingGenerator>();
-			var loggerFactory = sp.GetRequiredService<ILoggerFactory>();
-			return embeddings.AsBuilder()
-				.UseLogging(loggerFactory)
-				.Build();
-		});
+		// Semantic search using AppContentIndexer — OS handles embeddings internally.
+		builder.Services.AddSingleton<ISemanticSearchService, AppContentIndexerSearchService>();
 
 		return builder;
 	}
