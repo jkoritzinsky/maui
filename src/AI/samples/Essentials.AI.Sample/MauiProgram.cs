@@ -145,6 +145,7 @@ public static class MauiProgram
 				.Build();
 		});
 
+<<<<<<< HEAD
 		// Semantic search backed by NL embeddings + in-memory vector store
 		builder.Services.AddSingleton<ISemanticSearchService, EmbeddingSearchService>();
 
@@ -197,6 +198,11 @@ public static class MauiProgram
 
 		// Semantic search using AppContentIndexer — OS handles embeddings internally.
 		builder.Services.AddSingleton<ISemanticSearchService, AppContentIndexerSearchService>();
+=======
+		// Semantic search backed by NL embeddings
+		builder.Services.AddSingleton<ISemanticSearchService>(sp =>
+			new EmbeddingSearchService(sp.GetRequiredService<IEmbeddingGenerator<string, Embedding<float>>>()));
+>>>>>>> origin/dev/ai-sample-improvements
 
 		return builder;
 	}
