@@ -7,38 +7,22 @@
     xmlns:views="clr-namespace:Maui.Controls.Sample.Views.Landmarks"
     x:Class="Maui.Controls.Sample.Pages.LandmarkDetailPage"
     x:DataType="viewModels:LandmarkDetailViewModel"
-<<<<<<< HEAD
-    Shell.NavBarIsVisible="False"
-    Title="{Binding Landmark.Name}">
-
-    <Grid>
-=======
     SafeAreaEdges="None"
     Shell.NavBarIsVisible="False"
     Title="{Binding Landmark.Name}">
 
     <Grid SafeAreaEdges="None">
->>>>>>> origin/dev/ai-sample-improvements
         <!-- Full-bleed Header Image (fixed behind scroll) -->
         <Image
             VerticalOptions="Start" HeightRequest="380" Aspect="AspectFill"
             Source="{Binding Landmark.BackgroundImageName, StringFormat='Images/Backgrounds/{0}.jpg'}" />
 
-<<<<<<< HEAD
-        <!-- Fixed gradient at bottom of image (covers pull-down edge) -->
-        <BoxView VerticalOptions="Start" HeightRequest="380">
-            <BoxView.Background>
-                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                    <GradientStop Color="Transparent" Offset="0.6" />
-                    <GradientStop Color="{AppThemeBinding Light=#60FFFFFF, Dark=#601C1C1E}" Offset="1.0" />
-=======
         <!-- Fixed fade overlay at bottom of image (hides image edge on overscroll) -->
         <BoxView VerticalOptions="Start" HeightRequest="380">
             <BoxView.Background>
                 <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
                     <GradientStop Color="{AppThemeBinding Light=#00FFFFFF, Dark=#001C1C1E}" Offset="0.5" />
                     <GradientStop Color="{AppThemeBinding Light=White, Dark=#1C1C1E}" Offset="1.0" />
->>>>>>> origin/dev/ai-sample-improvements
                 </LinearGradientBrush>
             </BoxView.Background>
         </BoxView>
@@ -47,48 +31,26 @@
         <ScrollView>
             <VerticalStackLayout>
 
-<<<<<<< HEAD
-                <!-- Spacer to show image behind -->
-                <BoxView HeightRequest="220" Color="Transparent" />
-
-                <!-- Gradient that scrolls over image -->
-                <BoxView HeightRequest="160">
-                    <BoxView.Background>
-                        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                            <GradientStop Color="Transparent" Offset="0.0" />
-=======
                 <!-- Gradient that scrolls over image into content -->
                 <BoxView HeightRequest="120" Margin="0,180,0,0">
                     <BoxView.Background>
                         <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
                             <GradientStop Color="{AppThemeBinding Light=#00FFFFFF, Dark=#001C1C1E}" Offset="0.0" />
->>>>>>> origin/dev/ai-sample-improvements
                             <GradientStop Color="{AppThemeBinding Light=White, Dark=#1C1C1E}" Offset="1.0" />
                         </LinearGradientBrush>
                     </BoxView.Background>
                 </BoxView>
 
-<<<<<<< HEAD
-                <!-- Content area with solid background -->
-                <VerticalStackLayout
-                    Spacing="16"
-                    Padding="20,0,20,100"
-                    BackgroundColor="{AppThemeBinding Light=White, Dark=#1C1C1E}">
-=======
                 <!-- Content area -->
                 <VerticalStackLayout
                     Spacing="16"
                     Padding="20,0,20,0"
                     Background="{AppThemeBinding Light=White, Dark=#1C1C1E}">
->>>>>>> origin/dev/ai-sample-improvements
 
                     <!-- Name & Continent -->
                     <Label
                         Text="{Binding Landmark.Name}"
-<<<<<<< HEAD
-=======
                         Margin="0,-80,0,0"
->>>>>>> origin/dev/ai-sample-improvements
                         FontSize="28"
                         FontAttributes="Bold" />
                     <Label
@@ -109,11 +71,7 @@
                                     Margin="0,0,6,6"
                                     StrokeShape="RoundRectangle 12"
                                     StrokeThickness="0"
-<<<<<<< HEAD
-                                    BackgroundColor="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray900}}">
-=======
                                     Background="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray900}}">
->>>>>>> origin/dev/ai-sample-improvements
                                     <Label
                                         Text="{Binding ., StringFormat='#{0}'}"
                                         FontSize="12"
@@ -135,11 +93,7 @@
                         Padding="16"
                         StrokeShape="RoundRectangle 12"
                         StrokeThickness="0"
-<<<<<<< HEAD
-                        BackgroundColor="{AppThemeBinding Light=#F0F4FF, Dark=#1A1A2E}">
-=======
                         Background="{AppThemeBinding Light=#F0F4FF, Dark=#1A1A2E}">
->>>>>>> origin/dev/ai-sample-improvements
                         <Grid>
                             <!-- Loading state -->
                             <HorizontalStackLayout
@@ -185,14 +139,6 @@
                         Margin="0,8,0,0"
                         IsVisible="{Binding SimilarDestinations.Count, Converter={StaticResource IsNotNullConverter}}" />
 
-<<<<<<< HEAD
-                    <views:LandmarkHorizontalListView
-                        Landmarks="{Binding SimilarDestinations}"
-                        LandmarkTapped="OnSimilarLandmarkTapped"
-                        IsVisible="{Binding SimilarDestinations.Count, Converter={StaticResource IsNotNullConverter}}" />
-
-                </VerticalStackLayout>
-=======
                 </VerticalStackLayout>
 
                 <!-- Similar destinations — outside padded content for edge-to-edge scroll -->
@@ -205,19 +151,10 @@
                 <!-- Bottom spacer with matching background -->
                 <BoxView HeightRequest="100" Background="{AppThemeBinding Light=White, Dark=#1C1C1E}" />
 
->>>>>>> origin/dev/ai-sample-improvements
             </VerticalStackLayout>
         </ScrollView>
 
         <!-- Floating Back Button -->
-<<<<<<< HEAD
-        <Button
-            Text="←" Clicked="OnBackClicked"
-            VerticalOptions="Start" HorizontalOptions="Start" Margin="20,20,0,0"
-            HeightRequest="44" WidthRequest="44" CornerRadius="22" Padding="0"
-            FontSize="24" Background="{AppThemeBinding Light=#80FFFFFF, Dark=#80000000}"
-            TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark=White}" />
-=======
         <Grid SafeAreaEdges="Container" VerticalOptions="Start" HorizontalOptions="Start">
             <Button
                 Text="←" Clicked="OnBackClicked"
@@ -226,7 +163,6 @@
                 FontSize="24" Background="{AppThemeBinding Light=#80FFFFFF, Dark=#80000000}"
                 TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark=White}" />
         </Grid>
->>>>>>> origin/dev/ai-sample-improvements
 
         <!-- Bottom Bar: Language + Plan Trip -->
         <Grid
@@ -234,11 +170,7 @@
             Padding="20,12"
             ColumnDefinitions="Auto,*"
             ColumnSpacing="12"
-<<<<<<< HEAD
-            BackgroundColor="{AppThemeBinding Light=#F0FFFFFF, Dark=#F01C1C1E}">
-=======
             Background="{AppThemeBinding Light=#F0FFFFFF, Dark=#F01C1C1E}">
->>>>>>> origin/dev/ai-sample-improvements
 
             <HorizontalStackLayout Spacing="6" VerticalOptions="Center">
                 <Label Text="🌐" FontSize="18" VerticalOptions="Center" />
@@ -256,11 +188,7 @@
                 FontSize="16"
                 Padding="16,12"
                 CornerRadius="12"
-<<<<<<< HEAD
-                BackgroundColor="{StaticResource Primary}"
-=======
                 Background="{StaticResource Primary}"
->>>>>>> origin/dev/ai-sample-improvements
                 TextColor="White"
                 Clicked="OnPlanTripClicked" />
         </Grid>

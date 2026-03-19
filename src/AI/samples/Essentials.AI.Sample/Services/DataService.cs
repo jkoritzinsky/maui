@@ -14,11 +14,7 @@ public partial class DataService
 		Converters = { new JsonStringEnumConverter() },
 	};
 
-<<<<<<< HEAD
-	private readonly ISemanticSearchService _searchService;
-=======
 	private readonly ISemanticSearchService? _searchService;
->>>>>>> origin/dev/ai-sample-improvements
 	private readonly ILogger<DataService> _logger;
 	private readonly Task _readyTask;
 	private readonly TaskCompletionSource _dataLoaded = new();
@@ -36,11 +32,7 @@ public partial class DataService
 	/// </summary>
 	public event Action<int, int>? EmbeddingProgressChanged;
 
-<<<<<<< HEAD
-	public DataService(ISemanticSearchService searchService, ILogger<DataService> logger)
-=======
 	public DataService(ILogger<DataService> logger, ISemanticSearchService? searchService = null)
->>>>>>> origin/dev/ai-sample-improvements
 	{
 		_searchService = searchService;
 		_logger = logger;
@@ -95,11 +87,7 @@ public partial class DataService
 	{
 		await _readyTask;
 
-<<<<<<< HEAD
-		var results = await _searchService.SearchAsync("landmarks", query, maxResults);
-=======
 		var results = await _searchService!.SearchAsync("landmarks", query, maxResults);
->>>>>>> origin/dev/ai-sample-improvements
 
 		return results
 			.Select(r => int.TryParse(r.Id, out var id) ? _landmarksById?.GetValueOrDefault(id) : null)
@@ -113,11 +101,7 @@ public partial class DataService
 		await _readyTask;
 
 		var searchQuery = category == PointOfInterestCategory.None ? query : $"{category}: {query}";
-<<<<<<< HEAD
-		var results = await _searchService.SearchAsync("pois", searchQuery, maxResults * 2);
-=======
 		var results = await _searchService!.SearchAsync("pois", searchQuery, maxResults * 2);
->>>>>>> origin/dev/ai-sample-improvements
 
 		return results
 			.Select(r => _poisByName?.GetValueOrDefault(r.Id))
@@ -161,11 +145,7 @@ public partial class DataService
 	{
 		try
 		{
-<<<<<<< HEAD
-			if (_landmarks is not { } landmarks || _pointsOfInterest is not { } pois)
-=======
 			if (_searchService is null || _landmarks is not { } landmarks || _pointsOfInterest is not { } pois)
->>>>>>> origin/dev/ai-sample-improvements
 				return;
 
 			var totalItems = landmarks.Count + pois.Count;

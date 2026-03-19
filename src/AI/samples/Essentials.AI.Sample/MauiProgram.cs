@@ -145,9 +145,9 @@ public static class MauiProgram
 				.Build();
 		});
 
-<<<<<<< HEAD
-		// Semantic search backed by NL embeddings + in-memory vector store
-		builder.Services.AddSingleton<ISemanticSearchService, EmbeddingSearchService>();
+		// Semantic search backed by NL embeddings
+		builder.Services.AddSingleton<ISemanticSearchService>(sp =>
+			new EmbeddingSearchService(sp.GetRequiredService<IEmbeddingGenerator<string, Embedding<float>>>()));
 
 		return builder;
 	}
@@ -186,7 +186,6 @@ public static class MauiProgram
 		// Register "cloud-model" with buffering
 		builder.Services.AddKeyedSingleton<IChatClient>("cloud-model", (sp, _) =>
 		{
-			// TODO: Add OpenAI/Azure support for better translation quality
 			var phiClient = sp.GetRequiredService<PhiSilicaChatClient>();
 			var loggerFactory = sp.GetRequiredService<ILoggerFactory>();
 			return phiClient
@@ -198,11 +197,6 @@ public static class MauiProgram
 
 		// Semantic search using AppContentIndexer — OS handles embeddings internally.
 		builder.Services.AddSingleton<ISemanticSearchService, AppContentIndexerSearchService>();
-=======
-		// Semantic search backed by NL embeddings
-		builder.Services.AddSingleton<ISemanticSearchService>(sp =>
-			new EmbeddingSearchService(sp.GetRequiredService<IEmbeddingGenerator<string, Embedding<float>>>()));
->>>>>>> origin/dev/ai-sample-improvements
 
 		return builder;
 	}
