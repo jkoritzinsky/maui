@@ -985,140 +985,68 @@ function Write-MarkdownReport {
         [hashtable]$WithFixResult
     )
     
-    $reportDate = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
     $status = if ($VerificationPassed) { "✅ PASSED" } else { "❌ FAILED" }
-    $statusSymbol = if ($VerificationPassed) { "✅" } else { "❌" }
-    
-    $markdown = @"
-### Test Verification Report
+    $woActual = if ($FailedWithoutFix) { "FAIL" } else { "PASS" }
+    $woResult = if ($FailedWithoutFix) { "✅" } else { "❌" }
+    $wActual = if ($PassedWithFix) { "PASS" } else { "FAIL" }
+    $wResult = if ($PassedWithFix) { "✅" } else { "❌" }
+    $mergeBaseShort = if ($MergeBase -and $MergeBase.Length -ge 8) { $MergeBase.Substring(0, 8) } else { "$MergeBase" }
 
-**Date:** $reportDate | **Test Type:** $effectiveTestType | **Platform:** $(if ($Platform) { $Platform.ToUpper() } else { "N/A" }) | **Status:** $status
+    $lines = @()
+    $lines += "### Gate Result: $status"
+    $lines += ""
+    $lines += "**Platform:** $($Platform.ToUpper())"
+    $lines += ""
+    $lines += "#### Tests Detected"
+    $lines += ""
+    $lines += "| # | Type | Test Name | Filter |"
+    $lines += "|---|------|-----------|--------|"
+    $i = 0
+    foreach ($t in $AllDetectedTests) {
+        $i++
+        $lines += "| $i | $($t.Type) | $($t.TestName) | ``$($t.Filter)`` |"
+    }
+    $lines += ""
+    $lines += "#### Verification"
+    $lines += ""
+    $lines += "| Step | Expected | Actual | Result |"
+    $lines += "|------|----------|--------|--------|"
+    $lines += "| Tests WITHOUT fix | FAIL | $woActual | $woResult |"
+    $lines += "| Tests WITH fix | PASS | $wActual | $wResult |"
+    $lines += ""
+    $lines += "#### Fix Files Reverted"
+    $lines += ""
+    foreach ($f in $RevertableFiles) {
+        $lines += "- ``$f``"
+    }
+    if ($NewFiles.Count -gt 0) {
+        $lines += ""
+        $lines += "#### New Files (Not Reverted)"
+        $lines += ""
+        foreach ($f in $NewFiles) {
+            $lines += "- ``$f``"
+        }
+    }
+    $lines += ""
+    $lines += "---"
+    $lines += ""
+    $lines += "#### Per-Test Results"
+    $lines += ""
+    $lines += "| Type | Test | Without Fix | With Fix |"
+    $lines += "|------|------|-------------|----------|"
+    foreach ($t in $AllDetectedTests) {
+        $wo = $withoutFixResults | Where-Object { $_.TestName -eq $t.TestName }
+        $w = $withFixResults | Where-Object { $_.TestName -eq $t.TestName }
+        $woS = if ($wo -and -not $wo.Passed) { "FAIL ✅" } else { "PASS ❌" }
+        $wS = if ($w -and $w.Passed) { "PASS ✅" } else { "FAIL ❌" }
+        $lines += "| $($t.Type) | $($t.TestName) | $woS | $wS |"
+    }
+    $lines += ""
+    $lines += "---"
+    $lines += ""
+    $lines += "**Base Branch:** $BaseBranchName | **Merge Base:** $mergeBaseShort"
 
-#### Summary
-
-| Check | Expected | Actual | Result |
-|-------|----------|--------|--------|
-| Tests WITHOUT fix | FAIL | $(if ($FailedWithoutFix) { "FAIL" } else { "PASS" }) | $(if ($FailedWithoutFix) { "✅" } else { "❌" }) |
-| Tests WITH fix | PASS | $(if ($PassedWithFix) { "PASS" } else { "FAIL" }) | $(if ($PassedWithFix) { "✅" } else { "❌" }) |
-
-#### $statusSymbol Final Verdict
-
-$(if ($VerificationPassed) {
-    @"
-**VERIFICATION PASSED** ✅
-
-The tests correctly detect the issue:
-- ✅ Tests **FAIL** without the fix (as expected - bug is present)
-- ✅ Tests **PASS** with the fix (as expected - bug is fixed)
-
-**Conclusion:** The tests properly validate the fix and catch the bug when it's present.
-"@
-} else {
-    @"
-**VERIFICATION FAILED** ❌
-
-$(if (-not $FailedWithoutFix) {
-    "❌ **Tests PASSED without fix** (should have failed)`n   - The tests don't actually detect the bug`n   - Tests may not be testing the right behavior`n"
-})$(if (-not $PassedWithFix) {
-    "❌ **Tests FAILED with fix** (should have passed)`n   - The fix doesn't resolve the issue`n   - Tests may be broken or testing something else`n"
-})
-**Possible causes:**
-1. Wrong fix files specified
-2. Tests don't actually test the fixed behavior  
-3. The issue was already fixed in base branch
-4. Build caching - try clean rebuild
-5. Test needs different setup or conditions
-"@
-})
-
----
-
-#### Configuration
-
-**Test Type:** $effectiveTestType
-**Platform:** $(if ($Platform) { $Platform } else { "N/A" })
-**Test Filter:** $TestFilter
-**Base Branch:** $BaseBranchName
-**Merge Base:** $(if ($MergeBase -and $MergeBase.Length -ge 8) { $MergeBase.Substring(0, 8) } else { $MergeBase })
-
-### Fix Files
-
-$(($RevertableFiles | ForEach-Object { "- ``$_``" }) -join "`n")
-
-$(if ($NewFiles.Count -gt 0) {
-@"
-
-### New Files (Not Reverted)
-
-$(($NewFiles | ForEach-Object { "- ``$_``" }) -join "`n")
-"@
-})
-
----
-
-#### Test Results Details
-
-### Test Run 1: WITHOUT Fix
-
-**Expected:** Tests should FAIL (bug is present)  
-**Actual:** Tests $(if ($FailedWithoutFix) { "FAILED" } else { "PASSED" }) $(if ($FailedWithoutFix) { "✅" } else { "❌" })
-
-**Test Summary:**
-- Total: $($WithoutFixResult.Total)
-- Passed: $($WithoutFixResult.PassCount)
-- Failed: $($WithoutFixResult.Failed)
-- Skipped: $($WithoutFixResult.Skipped)
-
-$(if ($WithoutFixResult.FailureReason) {
-    "**Failure Reason:** ``$($WithoutFixResult.FailureReason)``"
-})
-
-<details>
-<summary>View full test output (without fix)</summary>
-
-``````
-$(Get-Content $WithoutFixLog -Raw)
-``````
-
-</details>
-
----
-
-### Test Run 2: WITH Fix
-
-**Expected:** Tests should PASS (bug is fixed)  
-**Actual:** Tests $(if ($PassedWithFix) { "PASSED" } else { "FAILED" }) $(if ($PassedWithFix) { "✅" } else { "❌" })
-
-**Test Summary:**
-- Total: $($WithFixResult.Total)
-- Passed: $($WithFixResult.PassCount)
-- Failed: $($WithFixResult.Failed)
-- Skipped: $($WithFixResult.Skipped)
-
-$(if ($WithFixResult.FailureReason) {
-    "**Failure Reason:** ``$($WithFixResult.FailureReason)``"
-})
-
-<details>
-<summary>View full test output (with fix)</summary>
-
-``````
-$(Get-Content $WithFixLog -Raw)
-``````
-
-</details>
-
----
-
-#### Logs
-
-- Full verification log: ``$ValidationLog``
-- Test output without fix: ``$WithoutFixLog``
-- Test output with fix: ``$WithFixLog``
-- Test logs: ``CustomAgentLogsTmp/``
-"@
-
-    $markdown | Set-Content -Path $MarkdownReport -Encoding UTF8
+    ($lines -join "`n") | Set-Content -Path $MarkdownReport -Encoding UTF8
     Write-Host ""
     Write-Host "📄 Markdown report saved to: $MarkdownReport" -ForegroundColor Cyan
 }
