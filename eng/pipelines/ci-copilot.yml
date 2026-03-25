@@ -25,11 +25,6 @@ parameters:
       - catalyst
       - windows
 
-  - name: SkipTryFix
-    displayName: 'Skip Try-Fix phase (stop after Gate)'
-    type: boolean
-    default: false
-
   - name: androidPool
     type: object
     default:
@@ -587,7 +582,7 @@ stages:
               # The script will merge the PR into the current branch
               # -PostSummaryComment and -RunFinalize handle posting comments
               set +e
-              pwsh -NoProfile .github/scripts/Review-PR.ps1 -PRNumber ${{ parameters.PRNumber }} -Platform ${{ parameters.Platform }} ${{ if eq(parameters.SkipTryFix, true) }}-SkipTryFix${{ end }} -LogFile "$(Build.ArtifactStagingDirectory)/copilot-logs/copilot_review_output.md"
+              pwsh -NoProfile .github/scripts/Review-PR.ps1 -PRNumber ${{ parameters.PRNumber }} -Platform ${{ parameters.Platform }} -SkipTryFix -LogFile "$(Build.ArtifactStagingDirectory)/copilot-logs/copilot_review_output.md"
               COPILOT_EXIT_CODE=$?
               set -e
               
