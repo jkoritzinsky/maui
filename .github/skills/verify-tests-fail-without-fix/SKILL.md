@@ -13,14 +13,16 @@ Verifies tests actually catch the issue. Supports **all test types** (UI tests, 
 
 ## Supported Test Types
 
-| Test Type | Auto-Detected From | Runner | Platform Required |
-|-----------|-------------------|--------|-------------------|
-| **UITest** | `TestCases.Shared.Tests/`, `TestCases.HostApp/` | `BuildAndRunHostApp.ps1` | ✅ Yes |
-| **UnitTest** | `*.UnitTests/`, `Graphics.Tests/` | `dotnet test` | ❌ No |
-| **XamlUnitTest** | `Xaml.UnitTests/` | `dotnet test` | ❌ No |
-| **DeviceTest** | `DeviceTests/` | `Run-DeviceTests.ps1` | ✅ Yes |
+| Test Type | Auto-Detected From | Runner |
+|-----------|-------------------|--------|
+| **UITest** | `TestCases.Shared.Tests/`, `TestCases.HostApp/` | `BuildAndRunHostApp.ps1` |
+| **DeviceTest** | `DeviceTests/` | `Run-DeviceTests.ps1` |
+| **UnitTest** | `*.UnitTests/`, `Graphics.Tests/` | `dotnet test` |
+| **XamlUnitTest** | `Xaml.UnitTests/` | `dotnet test` |
 
 Test type is **auto-detected** from changed files. Override with `-TestType` if needed.
+
+**`-Platform` is always required.** It selects which platform to verify the fix on.
 
 ## Mode 1: Verify Failure Only (Test Creation)
 
@@ -30,17 +32,11 @@ Use when **creating tests before writing a fix**:
 - Perfect for test-first development
 
 ```bash
-# UI tests (auto-detected, platform required)
+# Auto-detect test type and filter
 pwsh .github/skills/verify-tests-fail-without-fix/scripts/verify-tests-fail.ps1 -Platform android
 
-# Unit tests (auto-detected, no platform needed)
-pwsh .github/skills/verify-tests-fail-without-fix/scripts/verify-tests-fail.ps1
-
 # Explicit test type + filter
-pwsh .github/skills/verify-tests-fail-without-fix/scripts/verify-tests-fail.ps1 -TestType UnitTest -TestFilter "Maui12345"
-
-# XAML unit tests
-pwsh .github/skills/verify-tests-fail-without-fix/scripts/verify-tests-fail.ps1 -TestType XamlUnitTest -TestFilter "Maui12345"
+pwsh .github/skills/verify-tests-fail-without-fix/scripts/verify-tests-fail.ps1 -Platform android -TestType UnitTest -TestFilter "Maui12345"
 ```
 
 ## Mode 2: Full Verification (Fix Validation)
@@ -52,9 +48,6 @@ Use when **validating both tests and fix**:
 ```bash
 # Auto-detect everything (recommended)
 pwsh .github/skills/verify-tests-fail-without-fix/scripts/verify-tests-fail.ps1 -Platform android -RequireFullVerification
-
-# Unit tests (no platform needed)
-pwsh .github/skills/verify-tests-fail-without-fix/scripts/verify-tests-fail.ps1 -TestType UnitTest -RequireFullVerification
 
 # With explicit test filter
 pwsh .github/skills/verify-tests-fail-without-fix/scripts/verify-tests-fail.ps1 -Platform ios -TestFilter "Issue33356" -RequireFullVerification
@@ -198,7 +191,4 @@ CustomAgentLogsTmp/
 
 # Explicit base branch
 -BaseBranch "main"
-
-# Platform (required for UITest and DeviceTest, optional for UnitTest/XamlUnitTest)
--Platform android
 ```

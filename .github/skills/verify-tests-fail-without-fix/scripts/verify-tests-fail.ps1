@@ -72,7 +72,7 @@
 #>
 
 param(
-    [Parameter(Mandatory = $false)]
+    [Parameter(Mandatory = $true)]
     [ValidateSet("android", "ios", "catalyst", "maccatalyst", "windows")]
     [string]$Platform,
 
